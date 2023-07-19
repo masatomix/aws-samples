@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'The template used to create an ALB.'
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: LoadBalancer Information
+      Parameters:
+      - LoadBalancerName
+      - VpcID
+      - SubnetIDs
+      - SecurityGroupIDs
+
+    ParameterLabels:
+      LoadBalancerName:
+        default: "LoadBalancer Name"
+      VpcID:
+        default: "VPC ID"
+      SubnetIDs:
+        default: "SubnetID(s). Comma Delimited List."
+      SecurityGroupIDs:
+        default: "SecurityGroupID(s). Comma Delimited List."
+
+Parameters:
+  VpcID:
+    Type: "AWS::EC2::VPC::Id"
+
+  LoadBalancerName:
+    Type: String
+    Default: foo-alb
+
+  SecurityGroupIDs:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+
+# どのSubnetに配置するか。基本はpublicのSubnetを指定
+# ネットからアクセスできるところに置かれるかどうか、ってだけで、
+# privateのSubnetに転送できなくなる、わけじゃなさそう
+  # SubnetIDs:
+  #   Type: CommaDelimitedList
+  #   Default: 'subnet-xxx,subnet-yyy'
+
+  SubnetIDs:
+    Type: "List<AWS::EC2::Subnet::Id>"
+
+Resources:
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Type: application
+      Name:
+        Ref: LoadBalancerName
+      SecurityGroups:
+        Ref: SecurityGroupIDs
+      Subnets:
+        Ref: SubnetIDs
