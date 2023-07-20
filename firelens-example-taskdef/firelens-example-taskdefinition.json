@@ -53,6 +53,7 @@
             }
         }
     ],
+    "taskRoleArn": "arn:aws:iam::[AWS_ACCOUNT_ID]:role/ecsTaskRole",
     "executionRoleArn": "arn:aws:iam::[AWS_ACCOUNT_ID]:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "requiresCompatibilities": [
