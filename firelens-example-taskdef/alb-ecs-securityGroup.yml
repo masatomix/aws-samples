@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template 
+
+Parameters:
+  MyIP:
+    Description: IP address range which is allowed to access
+    Type: String
+    Default: 0.0.0.0/0
+
+  VpcID:
+    Type: "AWS::EC2::VPC::Id"
+
+Resources:
+
+  # ALB
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${AWS::StackName}-alb-sg'
+      GroupDescription: alb-sg
+      VpcId: !Ref VpcID
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-ALB-sg'
+
+  ALBSecurityGroupIngress000:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: -1
+      GroupId: !Ref ALBSecurityGroup
+      SourceSecurityGroupId: !Ref ALBSecurityGroup
+
+  ALBSecurityGroupIngress001:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 8080
+      ToPort: 8088
+      GroupId: !Ref ALBSecurityGroup
+      CidrIp: !Ref MyIP
+
+  ALBSecurityGroupIngress002:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 9080
+      ToPort: 9088
+      GroupId: !Ref ALBSecurityGroup
+      CidrIp: !Ref MyIP
+
+  # ECS
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${AWS::StackName}-ecs-sg'
+      GroupDescription: ecs-sg
+      VpcId: !Ref VpcID
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-ECS-sg'
+
+  ECSSecurityGroupIngress000:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: -1
+      GroupId: !Ref ECSSecurityGroup
+      SourceSecurityGroupId: !Ref ECSSecurityGroup
+
+  ECSSecurityGroupIngress001:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: -1
+      GroupId: !Ref ECSSecurityGroup
+      SourceSecurityGroupId: !Ref ALBSecurityGroup
+
+# Outputs:
+#   ECSSecurityGroup:
+#     Description: ''
+#     Value:
+#       Ref: ECSSecurityGroup
+#   ALBSecurityGroup:
+#     Description: ''
+#     Value:
+#       Ref: ALBSecurityGroup

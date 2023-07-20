@@ -1,0 +1,47 @@
+Resources:
+    IAMManagedPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "writeCloudWatchLogsPolicy"
+            Path: "/"
+            PolicyDocument: !Sub |
+                {
+                	"Version": "2012-10-17",
+                	"Statement": [
+                		{
+                			"Effect": "Allow",
+                			"Action": [
+                				"logs:CreateLogStream",
+                				"logs:DescribeLogGroups",
+                				"logs:DescribeLogStreams",
+                				"logs:CreateLogGroup",
+                				"logs:PutLogEvents"
+                			],
+                			"Resource": "*"
+                		}
+                	]
+                }
+
+    myEcsTaskRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "myEcsTaskRole"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy
+            Description: "Allows ECS tasks to call AWS services on your behalf."
+
+    myEcsTaskExecutionRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: "myEcsTaskExecutionRole"
+            AssumeRolePolicyDocument: "{\"Version\":\"2008-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ecs-tasks.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess"
+              - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+              - "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+              - !Ref IAMManagedPolicy
