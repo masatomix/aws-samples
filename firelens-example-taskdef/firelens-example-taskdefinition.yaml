@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+Resources:
+    ECSTaskDefinition:
+        Type: "AWS::ECS::TaskDefinition"
+        Properties:
+            ContainerDefinitions: 
+              - 
+                Essential: true
+                FirelensConfiguration: 
+                    Type: "fluentbit"
+                Image: "public.ecr.aws/aws-observability/aws-for-fluent-bit:init-2.28.4"
+                LogConfiguration: 
+                    LogDriver: "awslogs"
+                    Options: 
+                        awslogs-create-group: "true"
+                        awslogs-group: "firelens-container"
+                        awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: "firelens"
+                MemoryReservation: 50
+                Name: "log_router"
+                User: "0"
+              - 
+                Essential: true
+                Image: "nginx"
+                LogConfiguration: 
+                    LogDriver: "awsfirelens"
+                    Options: 
+                        Name: "cloudwatch"
+                        auto_create_group: "true"
+                        log_group_name: "firelens-fluent-bit1"
+                        log_stream_prefix: "from-fluent-bit/"
+                        region: !Ref AWS::Region
+                MemoryReservation: 100
+                Name: "app"
+                PortMappings: 
+                  - 
+                    ContainerPort: 80
+                    HostPort: 80
+                    Protocol: "tcp"
+            Family: "firelens-taskdefinition2"
+            TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/myEcsTaskRole"
+            ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/myEcsTaskExecutionRole"
+            NetworkMode: "awsvpc"
+            RequiresCompatibilities: 
+              - "FARGATE"
+            Cpu: "256"
+            Memory: "512"
