@@ -62,7 +62,7 @@ Parameters:
     Default: firelens-service1
   TaskDefinition:
     Type: String
-    Default: 'arn:aws:ecs:[AWS::Region]:[AWS::AccountId]:task-definition/firelens-example-taskdefinition:1'
+    Default: 'arn:aws:ecs:[AWS::Region]:[AWS::AccountId]:task-definition/firelens-taskdefinition:1'
 
 # ECSをどのセキュリティグループで運用するか。
   SecurityGroupIDs:

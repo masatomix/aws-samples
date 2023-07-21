@@ -28,7 +28,7 @@ Resources:
                     Options: 
                         Name: "cloudwatch"
                         auto_create_group: "true"
-                        log_group_name: "firelens-fluent-bit1"
+                        log_group_name: "firelens-fluent-bit"
                         log_stream_prefix: "from-fluent-bit/"
                         region: !Ref AWS::Region
                 MemoryReservation: 100
@@ -38,7 +38,7 @@ Resources:
                     ContainerPort: 80
                     HostPort: 80
                     Protocol: "tcp"
-            Family: "firelens-taskdefinition2"
+            Family: "firelens-taskdefinition"
             TaskRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/myEcsTaskRole"
             ExecutionRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/myEcsTaskExecutionRole"
             NetworkMode: "awsvpc"
